@@ -51,6 +51,11 @@ def browse():
 @main.route('/find', methods=['GET', 'POST'])
 def get_officer():
     form = FindOfficerForm()
+    if current_user:
+        try:
+            form.dept.data = current_user.dept_pref_rel
+        except AttributeError:
+            pass
     if form.validate_on_submit():
         return redirect(url_for('main.get_gallery'), code=307)
     return render_template('input_find_officer.html', form=form)
@@ -304,6 +309,10 @@ def add_officer():
     form = AddOfficerForm()
     add_unit_query(form, current_user)
     add_department_query(form, current_user)
+    try:
+        form.department.data = current_user.dept_pref_rel
+    except AttributeError:
+        pass
 
     if form.validate_on_submit() and not current_user.is_administrator and form.department.data.id != current_user.ac_department_id:
             abort(403)
@@ -340,6 +349,11 @@ def edit_officer(officer_id):
 def add_unit():
     form = AddUnitForm()
     add_department_query(form, current_user)
+    try:
+        form.department.data = current_user.dept_pref_rel
+    except AttributeError:
+        pass
+
     if form.validate_on_submit():
         unit = Unit(descrip=form.descrip.data,
                     department_id=form.department.data.id)
