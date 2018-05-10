@@ -172,6 +172,8 @@ def change_email(token):
 @login_required
 def change_dept():
     form = ChangeDefaultDepartmentForm()
+    if current_user.dept_pref:
+        form.dept_pref.data = current_user.dept_pref_rel
     if form.validate_on_submit():
         try:
             current_user.dept_pref = form.dept_pref.data.id
